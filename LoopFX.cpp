@@ -86,7 +86,7 @@ void paint()
     daisy::System::Delay(10);
     std::string line1 = "Knob1Val= ";
     char* strptr = &line1[0];
-    line1 += std::to_string(static_cast<uint32_t>(100*Knobs[knob_3].Value()));
+    line1 += std::to_string(static_cast<uint32_t>(100*Knobs[knob_1].Process())) + "%";
     display.WriteString(strptr,Font_7x10, true);
     display.SetCursor(0, 0);
     display.Update();
@@ -171,84 +171,84 @@ void processADC()
     switch (paramMode)
         {
             case menuItems::Delay:
-                conditionalParameter(k1, Knobs[knob_1].Value(), delTime, 1.f, 2000.f);
-                conditionalParameter(k2, Knobs[knob_2].Value(), delFeedback);
-                conditionalParameter(k3, Knobs[knob_3].Value(), delWet);
+                conditionalParameter(k1, Knobs[knob_1].Process(), delTime, 1.f, 2000.f);
+                conditionalParameter(k2, Knobs[knob_2].Process(), delFeedback);
+                conditionalParameter(k3, Knobs[knob_3].Process(), delWet);
                 break;
             case menuItems::Phaser:
-                conditionalParameter(k1, Knobs[knob_1].Value(), phaserRate, .01f, 15.f);
-                conditionalParameter(k2, Knobs[knob_2].Value(), phaserDepth);
-                conditionalParameter(k3, Knobs[knob_3].Value(), phaserLFOFreq, .01f, 15.f);
-                conditionalParameter(k4, Knobs[knob_4].Value(), phaserNumPoles, 1, 8, true);
-                conditionalParameter(k5, Knobs[knob_5].Value(), phaserFeedback);
-                conditionalParameter(k6, Knobs[knob_6].Value(), phaserWet);                
+                conditionalParameter(k1, Knobs[knob_1].Process(), phaserRate, .01f, 15.f);
+                conditionalParameter(k2, Knobs[knob_2].Process(), phaserDepth);
+                conditionalParameter(k3, Knobs[knob_3].Process(), phaserLFOFreq, .01f, 15.f);
+                conditionalParameter(k4, Knobs[knob_4].Process(), phaserNumPoles, 1, 8, true);
+                conditionalParameter(k5, Knobs[knob_5].Process(), phaserFeedback);
+                conditionalParameter(k6, Knobs[knob_6].Process(), phaserWet);                
                 break;
             case menuItems::Chorus:
-                conditionalParameter(k1, Knobs[knob_1].Value(), chorusFreq, .01f, 15.f);
-                conditionalParameter(k2, Knobs[knob_2].Value(), chorusDepth);
-                conditionalParameter(k3, Knobs[knob_3].Value(), chorusFeedback);
-                conditionalParameter(k4, Knobs[knob_4].Value(), chorusDelay, 20.f, 50.f);
-                conditionalParameter(k5, Knobs[knob_5].Value(), chorusWet);
+                conditionalParameter(k1, Knobs[knob_1].Process(), chorusFreq, .01f, 15.f);
+                conditionalParameter(k2, Knobs[knob_2].Process(), chorusDepth);
+                conditionalParameter(k3, Knobs[knob_3].Process(), chorusFeedback);
+                conditionalParameter(k4, Knobs[knob_4].Process(), chorusDelay, 20.f, 50.f);
+                conditionalParameter(k5, Knobs[knob_5].Process(), chorusWet);
                 break;
             case menuItems::Flanger:
-                conditionalParameter(k1, Knobs[knob_1].Value(), flangerFreq, .01f, 20.f);
-                conditionalParameter(k2, Knobs[knob_2].Value(), flangerDepth);
-                conditionalParameter(k3, Knobs[knob_3].Value(), flangerFeedback);
-                conditionalParameter(k4, Knobs[knob_4].Value(), flangerDelay, .01f, 15.f);
-                conditionalParameter(k5, Knobs[knob_5].Value(), flangerWet);
+                conditionalParameter(k1, Knobs[knob_1].Process(), flangerFreq, .01f, 20.f);
+                conditionalParameter(k2, Knobs[knob_2].Process(), flangerDepth);
+                conditionalParameter(k3, Knobs[knob_3].Process(), flangerFeedback);
+                conditionalParameter(k4, Knobs[knob_4].Process(), flangerDelay, .01f, 15.f);
+                conditionalParameter(k5, Knobs[knob_5].Process(), flangerWet);
                 break;
             case menuItems::Tremolo:
-                conditionalParameter(k1, Knobs[knob_1].Value(), tremRate, .01f, 15.f);
-                conditionalParameter(k2, Knobs[knob_2].Value(), tremDepth);
-                conditionalParameter(k3, Knobs[knob_3].Value(), tremWet);
+                conditionalParameter(k1, Knobs[knob_1].Process(), tremRate, .01f, 15.f);
+                conditionalParameter(k2, Knobs[knob_2].Process(), tremDepth);
+                conditionalParameter(k3, Knobs[knob_3].Process(), tremWet);
 
                 break;
             case menuItems::Overdrive:
-                conditionalParameter(k1, Knobs[knob_1].Value(), drive);
-                conditionalParameter(k2, Knobs[knob_2].Value(), driveWet);
+                conditionalParameter(k1, Knobs[knob_1].Process(), drive);
+                conditionalParameter(k2, Knobs[knob_2].Process(), driveWet);
                 
                 break;
             case menuItems::Bitcrusher:
-                conditionalParameter(k1, Knobs[knob_1].Value(), bitDepth,0,16,true);
-                conditionalParameter(k2, Knobs[knob_2].Value(), crushRate, 0,48000, true);
-                conditionalParameter(k3, Knobs[knob_3].Value(), crushWet);
+                conditionalParameter(k1, Knobs[knob_1].Process(), bitDepth,0,16,true);
+                conditionalParameter(k2, Knobs[knob_2].Process(), crushRate, 0,48000, true);
+                conditionalParameter(k3, Knobs[knob_3].Process(), crushWet);
                 break;
             case menuItems::Wavefolder:
-                conditionalParameter(k1, Knobs[knob_1].Value(), foldGain, -40.f, 0.f);
-                conditionalParameter(k2, Knobs[knob_2].Value(), foldOffset, 0.f, 10.f);
-                conditionalParameter(k3, Knobs[knob_3].Value(), foldWet);
+                conditionalParameter(k1, Knobs[knob_1].Process(), foldGain, -40.f, 0.f);
+                conditionalParameter(k2, Knobs[knob_2].Process(), foldOffset, 0.f, 10.f);
+                conditionalParameter(k3, Knobs[knob_3].Process(), foldWet);
                 fold.SetOffset(0);
                 break;
             case menuItems::Reverb:
-                conditionalParameter(k1, Knobs[knob_1].Value(), revFeedback);
-                conditionalParameter(k2, Knobs[knob_2].Value(), revCutoff, 0, 24000);
+                conditionalParameter(k1, Knobs[knob_1].Process(), revFeedback);
+                conditionalParameter(k2, Knobs[knob_2].Process(), revCutoff, 0, 24000);
                 break;
             case menuItems::Compressor:
-                conditionalParameter(k1, Knobs[knob_1].Value(), compRatio,1.f, 40.f);
-                conditionalParameter(k2, Knobs[knob_2].Value(), compAttack, .001f, 10.f);
-                conditionalParameter(k3, Knobs[knob_3].Value(), compRelease, .001f, 10.f);
-                conditionalParameter(k4, Knobs[knob_4].Value(), compMakeup, 0.f, 80.f);
-                conditionalParameter(k5, Knobs[knob_5].Value(), compThresh, 0.f, -80.f);
-                conditionalParameter(k6, Knobs[knob_6].Value(), compWet);  
+                conditionalParameter(k1, Knobs[knob_1].Process(), compRatio,1.f, 40.f);
+                conditionalParameter(k2, Knobs[knob_2].Process(), compAttack, .001f, 10.f);
+                conditionalParameter(k3, Knobs[knob_3].Process(), compRelease, .001f, 10.f);
+                conditionalParameter(k4, Knobs[knob_4].Process(), compMakeup, 0.f, 80.f);
+                conditionalParameter(k5, Knobs[knob_5].Process(), compThresh, 0.f, -80.f);
+                conditionalParameter(k6, Knobs[knob_6].Process(), compWet);  
                 break;
             case menuItems::Resonator:
-                conditionalParameter(k1, Knobs[knob_1].Value(), resDamping);
-                conditionalParameter(k2, Knobs[knob_2].Value(), resBright);
-                conditionalParameter(k3, Knobs[knob_3].Value(), resFreq, 20, 15000);
-                conditionalParameter(k4, Knobs[knob_4].Value(), resStructure);
-                conditionalParameter(k5, Knobs[knob_5].Value(), resWet);
+                conditionalParameter(k1, Knobs[knob_1].Process(), resDamping);
+                conditionalParameter(k2, Knobs[knob_2].Process(), resBright);
+                conditionalParameter(k3, Knobs[knob_3].Process(), resFreq, 20, 15000);
+                conditionalParameter(k4, Knobs[knob_4].Process(), resStructure);
+                conditionalParameter(k5, Knobs[knob_5].Process(), resWet);
                 break;
             case menuItems::Wah:
-                conditionalParameter(k1, Knobs[knob_1].Value(), wahAmount);
-                conditionalParameter(k2, Knobs[knob_2].Value(), wahLevel);
-                conditionalParameter(k3, Knobs[knob_3].Value(), wahWet, 0, 100);
+                conditionalParameter(k1, Knobs[knob_1].Process(), wahAmount);
+                conditionalParameter(k2, Knobs[knob_2].Process(), wahLevel);
+                conditionalParameter(k3, Knobs[knob_3].Process(), wahWet, 0, 100);
                 break;
             case menuItems::Looper:
-                conditionalParameter(k1, Knobs[knob_1].Value(), loopInLevel, 0.f, 2.f);
-                conditionalParameter(k2, Knobs[knob_2].Value(), loopLevel, 0.f, 2.f);
+                conditionalParameter(k1, Knobs[knob_1].Process(), loopInLevel, 0.f, 2.f);
+                conditionalParameter(k2, Knobs[knob_2].Process(), loopLevel, 0.f, 2.f);
                 break;
             case menuItems::SignalChain:
-                k2 = Knobs[knob_2].Value();
+                k2 = Knobs[knob_2].Process();
                 break;
         }
 
@@ -446,9 +446,6 @@ void AudioCallback(daisy::AudioHandle::InputBuffer  in,
                    size_t                    size)
     {   
         processAnalogControls();
-        processADC();
-        menuLogic();
-        looperLogic();
         for (size_t i=0; i < size; i++)
         {
             processEffects(in[0][i], out[0][i]);   
@@ -472,6 +469,9 @@ int main ()
     
 	while(1) 
     {
-        paint();
+        processADC();
+        menuLogic();
+        looperLogic();
+		paint();
     }
 }
