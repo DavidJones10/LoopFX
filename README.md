@@ -1,6 +1,7 @@
 # LoopFX
 
 ## Author
+### David Jones
 
 <!-- David Jones -->
 
