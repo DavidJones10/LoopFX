@@ -4,8 +4,8 @@
 #define MAX_LOOP_SIZE (48000 * 60 * 5)
 
 
-constexpr daisy::Pin PIN_FS1 =        daisy::seed::D26;
-constexpr daisy::Pin PIN_FS2 =        daisy::seed::D25;
+constexpr daisy::Pin PIN_FS1 =        daisy::seed::D25;
+constexpr daisy::Pin PIN_FS2 =        daisy::seed::D26;
 constexpr daisy::Pin PIN_KNOB1 =      daisy::seed::D21;
 constexpr daisy::Pin PIN_KNOB2 =      daisy::seed::D20;
 constexpr daisy::Pin PIN_KNOB3 =      daisy::seed::D19;
@@ -78,6 +78,7 @@ void InitAnalogControls()
         Knobs[i].Init(hw.adc.GetPtr(i), hw.AudioCallbackRate());
         Knobs[i].SetSampleRate(hw.AudioSampleRate());
     }
+    hw.adc.Start();
     
 }
 //==========================================================================================
@@ -86,7 +87,7 @@ void paint()
     daisy::System::Delay(10);
     std::string line1 = "Knob1Val= ";
     char* strptr = &line1[0];
-    line1 += std::to_string(static_cast<uint32_t>(100*Knobs[knob_1].Process())) + "%";
+    line1 += std::to_string(static_cast<uint32_t>(100*Knobs[knob_6].Process())) + "%";
     display.WriteString(strptr,Font_7x10, true);
     display.SetCursor(0, 0);
     display.Update();
@@ -166,13 +167,13 @@ void setEffectValues()
     resonator.SetStructure(resStructure);
 }
 //==========================================================================================
-void processADC()
+void knobsToValues()
 {
     switch (paramMode)
         {
             case menuItems::Delay:
-                conditionalParameter(k1, Knobs[knob_1].Process(), delTime, 1.f, 2000.f);
-                conditionalParameter(k2, Knobs[knob_2].Process(), delFeedback);
+                conditionalParameter(k1, Knobs[knob_2].Process(), delTime, 1.f, 2000.f);
+                conditionalParameter(k2, Knobs[knob_4].Process(), delFeedback);
                 conditionalParameter(k3, Knobs[knob_3].Process(), delWet);
                 break;
             case menuItems::Phaser:
@@ -201,12 +202,10 @@ void processADC()
                 conditionalParameter(k1, Knobs[knob_1].Process(), tremRate, .01f, 15.f);
                 conditionalParameter(k2, Knobs[knob_2].Process(), tremDepth);
                 conditionalParameter(k3, Knobs[knob_3].Process(), tremWet);
-
                 break;
             case menuItems::Overdrive:
                 conditionalParameter(k1, Knobs[knob_1].Process(), drive);
                 conditionalParameter(k2, Knobs[knob_2].Process(), driveWet);
-                
                 break;
             case menuItems::Bitcrusher:
                 conditionalParameter(k1, Knobs[knob_1].Process(), bitDepth,0,16,true);
@@ -345,6 +344,7 @@ void processEffects(float input, float& output)
         else 
             {output = input;}
         
+        
 }
 //=======================================================================================================//
 
@@ -446,6 +446,9 @@ void AudioCallback(daisy::AudioHandle::InputBuffer  in,
                    size_t                    size)
     {   
         processAnalogControls();
+        knobsToValues();
+        //menuLogic();
+        looperLogic();
         for (size_t i=0; i < size; i++)
         {
             processEffects(in[0][i], out[0][i]);   
@@ -455,23 +458,20 @@ void AudioCallback(daisy::AudioHandle::InputBuffer  in,
 int main ()
 {
     hw.Init();
-    hw.SetAudioBlockSize(48); // number of samples handled per callback
 	hw.SetAudioSampleRate(daisy::SaiHandle::Config::SampleRate::SAI_48KHZ);
     initEffects();  
+    initOLED();
+    paramMode = menuItems::Delay;
+    signalChain = {EffectType::Overdrive,EffectType::Phaser, EffectType::Chorus, EffectType::Delay};
+    hw.SetLed(true);
     InitOtherControls();
     InitAnalogControls();
-    initOLED();
-    hw.adc.Start();
-    hw.SetLed(true);
-    signalChain = {EffectType::Overdrive,EffectType::Phaser, EffectType::Chorus};
-    
+
+    hw.SetAudioBlockSize(48);
     hw.StartAudio(AudioCallback);
     
 	while(1) 
     {
-        processADC();
-        menuLogic();
-        looperLogic();
 		paint();
     }
 }

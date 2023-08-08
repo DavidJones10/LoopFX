@@ -75,21 +75,20 @@ daisysp::Resonator resonator;
 daisysp::Autowah wah;
 
 std::vector<EffectType> signalChain;
-menuItems paramMode = menuItems::SignalChain;
+menuItems paramMode;
 daisy::AnalogControl Knobs[KNOB_LAST];
 daisy::Switch Switches[SWITCH_LAST];
-
 using MyOledDisplay = daisy::OledDisplay<daisy::SSD130xI2c128x64Driver>;
 MyOledDisplay display;
 
 float masterGain = 1;
-float delTime=200, delFeedback=.8f, delWet=.5f;
+float delTime=200, delFeedback=.6f, delWet=.5f;
 float phaserRate=.5, phaserNumPoles=2 , phaserDepth=.5 , phaserLFOFreq=.5, phaserWet=.7f, phaserFeedback=.5f;
 float chorusFreq =.5, chorusDepth=.8f, chorusFeedback=.5f, chorusDelay=10, chorusWet=.7f; 
 float flangerFreq=1, flangerDepth=.5f , flangerFeedback=.5f , flangerDelay=5, flangerWet=.5f;
 float tremRate=10, tremDepth=.8f, tremWet=.8f;
 float drive=.3f, driveWet=.5f;
-float bitDepth=4, crushRate=8000, crushWet;
+float bitDepth=4, crushRate=8000, crushWet=.5f;
 float foldGain=-20.f , foldOffset=5.f, foldWet=.5f;
 float revFeedback=.6f, revCutoff=10000; 
 float compWet=.5f, compRatio=20.f, compAttack=5.f, compThresh=-40.f, compMakeup=40.f, compRelease=5.f;
