@@ -58,9 +58,9 @@ enum menuItems
 // VARIABLES AND OBJECTS ==========================================================
 
 static daisy::Encoder Encoder;
-std::vector<menuItems> menuItemVector = {menuItems::SignalChain,menuItems::Looper,menuItems::Delay,menuItems::Phaser,menuItems::Chorus,menuItems::Flanger,
+std::vector<menuItems> menuItemVector = {menuItems::Delay,menuItems::Phaser,menuItems::Chorus,menuItems::Flanger,
                                          menuItems::Tremolo,menuItems::Overdrive,menuItems::Compressor,menuItems::Bitcrusher,
-                                         menuItems::Wavefolder,menuItems::Reverb,menuItems::Resonator, menuItems::Wah};
+                                         menuItems::Wavefolder,menuItems::Reverb,menuItems::Resonator, menuItems::Wah,menuItems::Looper,menuItems::SignalChain,};
 
 daisysp::Phaser phaser; //2
 daisysp::Chorus chorus; //3
@@ -96,6 +96,7 @@ float resWet=.3f, resFreq=200, resBright=.5f, resDamping=.4f, resStructure=.2f;
 float wahWet=80, wahLevel=.7f, wahAmount=.7f;
 float loopInLevel=1.f, loopLevel=1.f; bool stopLoopPlayback=false;
 bool led_state = true;
+std::string displayString = "";
 
 
 // knob variables to be stored

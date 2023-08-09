@@ -14,7 +14,7 @@ constexpr daisy::Pin PIN_KNOB5 =      daisy::seed::D17;
 constexpr daisy::Pin PIN_KNOB6 =      daisy::seed::D16;
 constexpr daisy::Pin PIN_ENC_DEC =    daisy::seed::D23;
 constexpr daisy::Pin PIN_ENC_INC =    daisy::seed::D22;
-constexpr daisy::Pin PIN_ENC_BUTTON = daisy::seed::D13;
+constexpr daisy::Pin PIN_ENC_BUTTON = daisy::seed::D14;
 
 //==========================================================================================
 daisysp::DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS del; //1
@@ -37,6 +37,10 @@ float scaleKnob (float knobValue, float min, float max)
     return knobValue * (max-min) + min;
 }
 //==========================================================================================
+float LinearizeLogarithmicValue(float logValue)
+{
+    return std::sqrt(logValue);
+}
 
 void conditionalParameter(float &oldValue, float newValue, float &param, float min=0, float max=1, bool isInt=false)
 {
@@ -84,10 +88,9 @@ void InitAnalogControls()
 //==========================================================================================
 void paint()
 {
-    daisy::System::Delay(10);
-    std::string line1 = "Knob1Val= ";
-    char* strptr = &line1[0];
-    line1 += std::to_string(static_cast<uint32_t>(100*Knobs[knob_6].Process())) + "%";
+    daisy::System::Delay(2);
+    char* strptr = &displayString[0];
+    //displayString += std::to_string(static_cast<uint32_t>(100*LinearizeLogarithmicValue(Knobs[knob_6].Process()))) + "%";
     display.WriteString(strptr,Font_7x10, true);
     display.SetCursor(0, 0);
     display.Update();
@@ -168,83 +171,96 @@ void setEffectValues()
 }
 //==========================================================================================
 void knobsToValues()
-{
+{   
+
     switch (paramMode)
         {
             case menuItems::Delay:
-                conditionalParameter(k1, Knobs[knob_2].Process(), delTime, 1.f, 2000.f);
-                conditionalParameter(k2, Knobs[knob_4].Process(), delFeedback);
-                conditionalParameter(k3, Knobs[knob_3].Process(), delWet);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), delTime, 1.f, 2000.f);
+                conditionalParameter(k2, Knobs[knob_2].Process(), delFeedback);
+                conditionalParameter(k3, LinearizeLogarithmicValue(Knobs[knob_3].Process()), delWet);
+                displayString = "Delay";
                 break;
             case menuItems::Phaser:
-                conditionalParameter(k1, Knobs[knob_1].Process(), phaserRate, .01f, 15.f);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), phaserRate, .01f, 15.f);
                 conditionalParameter(k2, Knobs[knob_2].Process(), phaserDepth);
-                conditionalParameter(k3, Knobs[knob_3].Process(), phaserLFOFreq, .01f, 15.f);
+                conditionalParameter(k3, LinearizeLogarithmicValue(Knobs[knob_3].Process()), phaserLFOFreq, .01f, 15.f);
                 conditionalParameter(k4, Knobs[knob_4].Process(), phaserNumPoles, 1, 8, true);
-                conditionalParameter(k5, Knobs[knob_5].Process(), phaserFeedback);
-                conditionalParameter(k6, Knobs[knob_6].Process(), phaserWet);                
+                conditionalParameter(k5, LinearizeLogarithmicValue(Knobs[knob_5].Process()), phaserFeedback);
+                conditionalParameter(k6, LinearizeLogarithmicValue(Knobs[knob_6].Process()), phaserWet);   
+                displayString = "Phaser";             
                 break;
             case menuItems::Chorus:
-                conditionalParameter(k1, Knobs[knob_1].Process(), chorusFreq, .01f, 15.f);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), chorusFreq, .01f, 15.f);
                 conditionalParameter(k2, Knobs[knob_2].Process(), chorusDepth);
-                conditionalParameter(k3, Knobs[knob_3].Process(), chorusFeedback);
+                conditionalParameter(k3, LinearizeLogarithmicValue(Knobs[knob_3].Process()), chorusFeedback);
                 conditionalParameter(k4, Knobs[knob_4].Process(), chorusDelay, 20.f, 50.f);
-                conditionalParameter(k5, Knobs[knob_5].Process(), chorusWet);
+                conditionalParameter(k5, LinearizeLogarithmicValue(Knobs[knob_5].Process()), chorusWet);
+                displayString = "Chorus";
                 break;
             case menuItems::Flanger:
-                conditionalParameter(k1, Knobs[knob_1].Process(), flangerFreq, .01f, 20.f);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), flangerFreq, .01f, 20.f);
                 conditionalParameter(k2, Knobs[knob_2].Process(), flangerDepth);
-                conditionalParameter(k3, Knobs[knob_3].Process(), flangerFeedback);
+                conditionalParameter(k3, LinearizeLogarithmicValue(Knobs[knob_3].Process()), flangerFeedback);
                 conditionalParameter(k4, Knobs[knob_4].Process(), flangerDelay, .01f, 15.f);
-                conditionalParameter(k5, Knobs[knob_5].Process(), flangerWet);
+                conditionalParameter(k5, LinearizeLogarithmicValue(Knobs[knob_5].Process()), flangerWet);
+                displayString = "Flanger";
                 break;
             case menuItems::Tremolo:
-                conditionalParameter(k1, Knobs[knob_1].Process(), tremRate, .01f, 15.f);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), tremRate, .01f, 15.f);
                 conditionalParameter(k2, Knobs[knob_2].Process(), tremDepth);
-                conditionalParameter(k3, Knobs[knob_3].Process(), tremWet);
+                conditionalParameter(k3, LinearizeLogarithmicValue(Knobs[knob_3].Process()), tremWet);
+                displayString = "Tremolo";
                 break;
             case menuItems::Overdrive:
-                conditionalParameter(k1, Knobs[knob_1].Process(), drive);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), drive);
                 conditionalParameter(k2, Knobs[knob_2].Process(), driveWet);
+                displayString = "Overdrive";
                 break;
             case menuItems::Bitcrusher:
-                conditionalParameter(k1, Knobs[knob_1].Process(), bitDepth,0,16,true);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), bitDepth,0,16,true);
                 conditionalParameter(k2, Knobs[knob_2].Process(), crushRate, 0,48000, true);
-                conditionalParameter(k3, Knobs[knob_3].Process(), crushWet);
+                conditionalParameter(k3, LinearizeLogarithmicValue(Knobs[knob_3].Process()), crushWet);
+                displayString = "Bitcrusher";
                 break;
             case menuItems::Wavefolder:
-                conditionalParameter(k1, Knobs[knob_1].Process(), foldGain, -40.f, 0.f);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), foldGain, -40.f, 0.f);
                 conditionalParameter(k2, Knobs[knob_2].Process(), foldOffset, 0.f, 10.f);
-                conditionalParameter(k3, Knobs[knob_3].Process(), foldWet);
-                fold.SetOffset(0);
+                conditionalParameter(k3, LinearizeLogarithmicValue(Knobs[knob_3].Process()), foldWet);
+                displayString = "Wavefolder";
                 break;
             case menuItems::Reverb:
-                conditionalParameter(k1, Knobs[knob_1].Process(), revFeedback);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), revFeedback);
                 conditionalParameter(k2, Knobs[knob_2].Process(), revCutoff, 0, 24000);
+                displayString = "Reverb";
                 break;
             case menuItems::Compressor:
-                conditionalParameter(k1, Knobs[knob_1].Process(), compRatio,1.f, 40.f);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), compRatio,1.f, 40.f);
                 conditionalParameter(k2, Knobs[knob_2].Process(), compAttack, .001f, 10.f);
-                conditionalParameter(k3, Knobs[knob_3].Process(), compRelease, .001f, 10.f);
+                conditionalParameter(k3, LinearizeLogarithmicValue(Knobs[knob_3].Process()), compRelease, .001f, 10.f);
                 conditionalParameter(k4, Knobs[knob_4].Process(), compMakeup, 0.f, 80.f);
-                conditionalParameter(k5, Knobs[knob_5].Process(), compThresh, 0.f, -80.f);
-                conditionalParameter(k6, Knobs[knob_6].Process(), compWet);  
+                conditionalParameter(k5, LinearizeLogarithmicValue(Knobs[knob_5].Process()), compThresh, 0.f, -80.f);
+                conditionalParameter(k6, LinearizeLogarithmicValue(Knobs[knob_6].Process()), compWet);  
+                displayString = "Compressor";
                 break;
             case menuItems::Resonator:
-                conditionalParameter(k1, Knobs[knob_1].Process(), resDamping);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), resDamping);
                 conditionalParameter(k2, Knobs[knob_2].Process(), resBright);
-                conditionalParameter(k3, Knobs[knob_3].Process(), resFreq, 20, 15000);
+                conditionalParameter(k3, LinearizeLogarithmicValue(Knobs[knob_3].Process()), resFreq, 20, 15000);
                 conditionalParameter(k4, Knobs[knob_4].Process(), resStructure);
-                conditionalParameter(k5, Knobs[knob_5].Process(), resWet);
+                conditionalParameter(k5, LinearizeLogarithmicValue(Knobs[knob_5].Process()), resWet);
+                displayString = "Resonator";
                 break;
             case menuItems::Wah:
-                conditionalParameter(k1, Knobs[knob_1].Process(), wahAmount);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), wahAmount);
                 conditionalParameter(k2, Knobs[knob_2].Process(), wahLevel);
-                conditionalParameter(k3, Knobs[knob_3].Process(), wahWet, 0, 100);
+                conditionalParameter(k3, LinearizeLogarithmicValue(Knobs[knob_3].Process()), wahWet, 0, 100);
+                displayString = "Wah";
                 break;
             case menuItems::Looper:
-                conditionalParameter(k1, Knobs[knob_1].Process(), loopInLevel, 0.f, 2.f);
+                conditionalParameter(k1, LinearizeLogarithmicValue(Knobs[knob_1].Process()), loopInLevel, 0.f, 2.f);
                 conditionalParameter(k2, Knobs[knob_2].Process(), loopLevel, 0.f, 2.f);
+                displayString = "Looper";
                 break;
             case menuItems::SignalChain:
                 k2 = Knobs[knob_2].Process();
@@ -360,7 +376,7 @@ void updateParamMode()
     else
     {
         // If the index is out of range, set paramMode to a default value
-        paramMode = menuItems::SignalChain; // Or any other default value
+        paramMode = menuItems::Delay; // Or any other default value
     }
 }
 
@@ -368,15 +384,19 @@ void menuLogic ()
 {
     Encoder.Debounce();
     bool buttonPressed = Encoder.RisingEdge();
-    int encValue = Encoder.Increment();
+    //int encValue = Encoder.Increment();
        // if (buttonPressed) {encValue = 0;};
     if (buttonPressed)
     {
         // Increment the currentEffectIndex and handle wrapping around if it goes beyond the vector size
-        currentEffectIndex = (currentEffectIndex + 1) % signalChain.size();
-        // Update the paramMode variable based on the new index
-        updateParamMode();
-    }                                                                                                         //
+        currentEffectIndex = (currentEffectIndex + 1) % menuItemVector.size();
+    }      
+    else if (Encoder.TimeHeldMs()>2000)
+    {
+        currentEffectIndex = 0;
+    }   
+    // Update the paramMode variable based on the new index
+    updateParamMode();                                                                                                //
                                                                                                               //
 }          
                                                                                                            //
@@ -447,8 +467,8 @@ void AudioCallback(daisy::AudioHandle::InputBuffer  in,
     {   
         processAnalogControls();
         knobsToValues();
-        //menuLogic();
         looperLogic();
+        menuLogic();
         for (size_t i=0; i < size; i++)
         {
             processEffects(in[0][i], out[0][i]);   
@@ -461,8 +481,8 @@ int main ()
 	hw.SetAudioSampleRate(daisy::SaiHandle::Config::SampleRate::SAI_48KHZ);
     initEffects();  
     initOLED();
-    paramMode = menuItems::Delay;
     signalChain = {EffectType::Overdrive,EffectType::Phaser, EffectType::Chorus, EffectType::Delay};
+    paramMode = menuItems::Delay;
     hw.SetLed(true);
     InitOtherControls();
     InitAnalogControls();
