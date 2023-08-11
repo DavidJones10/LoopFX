@@ -25,22 +25,26 @@ static daisy::DaisySeed hw;
 static daisy::AdcHandle adc;
 static daisy::DacHandle dac;
 //==========================================================================================
-
+// Checks if effect is the first in the SignalChain vector
 bool isFirstEffect(EffectType effect)
 {
     return !signalChain.empty() && signalChain.front() == effect;
 }
 //==========================================================================================
-
+// Scales knob's 0 to 1 value from min to max
 float scaleKnob (float knobValue, float min, float max)
 {
     return knobValue * (max-min) + min;
 }
 //==========================================================================================
+// Scales the logarithmic pots to have a more linear response
 float LinearizeLogarithmicValue(float logValue)
 {
     return std::sqrt(logValue);
 }
+//==========================================================================================
+// Changes an effect parameter based on a changing knob value and scales and or type 
+// casts if necessary
 void conditionalParameter(float &oldValue, float newValue, float &param, float min=0, float max=1, bool isInt=false)
 {
     if(abs(oldValue - newValue) > 0.005f)
@@ -53,6 +57,7 @@ void conditionalParameter(float &oldValue, float newValue, float &param, float m
     }
 }
 //===========================================================================================
+// Initializes encoder and footswitches
 void InitOtherControls()
 {
     Encoder.Init(PIN_ENC_INC, PIN_ENC_DEC, PIN_ENC_BUTTON);
@@ -63,6 +68,8 @@ void InitOtherControls()
         Switches[i].Init(pin_numbers[i]);
     }
 }
+//==========================================================================================
+// Initializes potentiometers
 void InitAnalogControls()
 {
      
@@ -84,6 +91,7 @@ void InitAnalogControls()
     
 }
 //==========================================================================================
+// Removes given effect from the signal chain
 void removeEffectFromSignalChain(EffectType effect)
 {
     auto removed = std::find(signalChain.begin(), signalChain.end(), effect);
@@ -93,6 +101,7 @@ void removeEffectFromSignalChain(EffectType effect)
     }
 }
 //==========================================================================================
+// Places effect in signal chain at specified location from 0 to 7 and -1 if not present
 void placeEffectInSignalChain(EffectType effect, int newPosition)
 {
     if (newPosition == -1)
@@ -109,9 +118,9 @@ void placeEffectInSignalChain(EffectType effect, int newPosition)
         {removeEffectFromSignalChain(signalChain.back());}
 }
 //==========================================================================================
+// Gets index of an effect in the signal chain
 int getChainIndex(EffectType effect)
 {
-    auto index = std::find(signalChain.begin(), signalChain.end(), effect);
     auto it = std::find(signalChain.begin(), signalChain.end(), effect);
     if (it != signalChain.end())
     {
@@ -119,35 +128,32 @@ int getChainIndex(EffectType effect)
     }
     return -1; // Effect not found in signal chain
 }
+//==========================================================================================
+// Writes string at specific coordinates
 void stringToOled(char* charPointer, int x, int y)
 {
     display.WriteString(charPointer,Font_7x10, true);
     display.SetCursor(x, y);
 }
 //==========================================================================================
-void handleEncoder()
-{
-    if (Encoder.RisingEdge())
-    {
-        inSubmenu = true;
-        currentEffectIndex = 0;
-    }
-    if (Encoder.TimeHeldMs() > 2000)
-    {
-        inSubmenu = false;
-        currentEffectIndex = 0;
-    }
+// Uses encoder to control main menu
+void mainMenuEncoderLogic()
+{ 
     currentEffectIndex += Encoder.Increment();
     if (!inSubmenu)
-    {
+    {   
+        if (Encoder.RisingEdge())
+            {inSubmenu = true;}
         currentEffectIndex = currentEffectIndex < 0 ? 0 : currentEffectIndex;
         currentEffectIndex = currentEffectIndex > 14 ? 14 : currentEffectIndex;
         if (currentEffectIndex < signalChain.size())
             {paramMode = menuItemVector[currentEffectIndex];}
         else
             {paramMode = menuItems::SignalChain;}
-        }
+    }
 }
+//==========================================================================================
+// Makes strings and writes to OLED for main menu
 void mainMenu(char* charPointer)
 {
     if (!inSubmenu)
@@ -198,8 +204,15 @@ void mainMenu(char* charPointer)
 
     }
 }
+//==========================================================================================
+// Uses encoder to control submenus. Mostly for editing signal chain location
 int submenuEncoderLogic(bool isActive, EffectType effect)
 {
+    if (Encoder.TimeHeldMs() > 2000)
+    {
+        inSubmenu = false;
+        currentEffectIndex = 0;
+    }
     int currentChainLocation = getChainIndex(effect);
     if (isActive)
     {
@@ -210,10 +223,12 @@ int submenuEncoderLogic(bool isActive, EffectType effect)
         return currentChainLocation;
 }
 //==========================================================================================
+// Runs all displa function and is called in Main
 void displayMenu()
 {   
     daisy::System::Delay(2);
     char* strptr = &displayString[0];
+    mainMenuEncoderLogic();
     mainMenu(strptr);
     int chainLocation;
     if (inSubmenu)
@@ -295,6 +310,8 @@ void displayMenu()
     }
     display.Update();
 }
+//==========================================================================================
+// Initializes OLED screen
 void initOLED()
 {
     MyOledDisplay::Config disp_cfg;
@@ -308,6 +325,7 @@ void initOLED()
     
 }
 //==========================================================================================
+// Preliminary processing of all of the knobs
 void processAnalogControls()
 {
     
@@ -317,6 +335,7 @@ void processAnalogControls()
     }
 }
 //==========================================================================================
+// Sets all effect values using all corresponding variables
 void setEffectValues()
 {
     flanger.SetLfoDepth(flangerDepth);
@@ -367,6 +386,7 @@ void setEffectValues()
     resonator.SetStructure(resStructure);
 }
 //==========================================================================================
+// Processes knobs and adaptively uses their values to change effect parameters
 void knobsToValues()
 {   
 
@@ -467,6 +487,7 @@ void knobsToValues()
     setEffectValues(); 
 }
 //==========================================================================================
+// Main audio function: run audio through all active effects and processes looper
 void processEffects(float input, float& output)
 {
      for (EffectType effect : signalChain)  
@@ -563,6 +584,7 @@ void processEffects(float input, float& output)
         
 }        
 //==========================================================================================
+// Uses footswitches to control the looper
 void looperLogic()
 {
     Switches[FS_1].Debounce();
@@ -578,6 +600,7 @@ void looperLogic()
 
 }
 //==========================================================================================
+// Initializes all effects
 void initEffects()
 {
     // Initialize effects and their varibles
@@ -598,6 +621,7 @@ void initEffects()
     setEffectValues();
 }
 //==========================================================================================
+// Main audio fuction
 void AudioCallback(daisy::AudioHandle::InputBuffer  in,
                    daisy::AudioHandle::OutputBuffer out,
                    size_t                    size)
@@ -628,7 +652,6 @@ int main ()
     
 	while(1) 
     {
-        handleEncoder();
 		displayMenu();
     }
 }
