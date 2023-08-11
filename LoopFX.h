@@ -62,17 +62,17 @@ std::vector<menuItems> menuItemVector = {menuItems::Delay,menuItems::Phaser,menu
                                          menuItems::Tremolo,menuItems::Overdrive,menuItems::Compressor,menuItems::Bitcrusher,
                                          menuItems::Wavefolder,menuItems::Reverb,menuItems::Resonator, menuItems::Wah,menuItems::Looper,menuItems::SignalChain,};
 
-daisysp::Phaser phaser; //2
-daisysp::Chorus chorus; //3
-daisysp::Flanger flanger; //4
-daisysp::Tremolo trem; //5
-daisysp::Overdrive overd; //6
-daisysp::Bitcrush bitcr; //8
-daisysp::Wavefolder fold; //9
-daisysp::ReverbSc rev; //10
-daisysp::Compressor comp;
-daisysp::Resonator resonator;
-daisysp::Autowah wah;
+static daisysp::Phaser phaser; //2
+static daisysp::Chorus chorus; //3
+static daisysp::Flanger flanger; //4
+static daisysp::Tremolo trem; //5
+static daisysp::Overdrive overd; //6
+static daisysp::Bitcrush bitcr; //8
+static daisysp::Wavefolder fold; //9
+static daisysp::ReverbSc rev; //10
+static daisysp::Compressor comp;
+static daisysp::Resonator resonator;
+static daisysp::Autowah wah;
 
 std::vector<EffectType> signalChain;
 menuItems paramMode;
@@ -97,6 +97,10 @@ float wahWet=80, wahLevel=.7f, wahAmount=.7f;
 float loopInLevel=1.f, loopLevel=1.f; bool stopLoopPlayback=false;
 bool led_state = true;
 std::string displayString = "";
+bool inSubmenu = false;
+int cursorIndex = 0;
+int currentEffectIndex = 0;      
+bool editLocationAvailable = false;
 
 
 // knob variables to be stored

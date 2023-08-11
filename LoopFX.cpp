@@ -41,7 +41,6 @@ float LinearizeLogarithmicValue(float logValue)
 {
     return std::sqrt(logValue);
 }
-
 void conditionalParameter(float &oldValue, float newValue, float &param, float min=0, float max=1, bool isInt=false)
 {
     if(abs(oldValue - newValue) > 0.005f)
@@ -54,7 +53,6 @@ void conditionalParameter(float &oldValue, float newValue, float &param, float m
     }
 }
 //===========================================================================================
-
 void InitOtherControls()
 {
     Encoder.Init(PIN_ENC_INC, PIN_ENC_DEC, PIN_ENC_BUTTON);
@@ -86,13 +84,215 @@ void InitAnalogControls()
     
 }
 //==========================================================================================
-void paint()
+void removeEffectFromSignalChain(EffectType effect)
 {
+    auto removed = std::find(signalChain.begin(), signalChain.end(), effect);
+    if (removed != signalChain.end())
+    {
+        signalChain.erase(removed);
+    }
+}
+//==========================================================================================
+void placeEffectInSignalChain(EffectType effect, int newPosition)
+{
+    if (newPosition == -1)
+        {removeEffectFromSignalChain(effect);}
+    auto it = std::find(signalChain.begin(), signalChain.end(), effect);
+    if (it != signalChain.end())
+    {
+        signalChain.erase(it);
+        signalChain.insert(signalChain.begin() + newPosition, effect);
+    }
+    else
+    {signalChain.insert(signalChain.begin() + newPosition, effect);}
+    if (signalChain.size() > 8)
+        {removeEffectFromSignalChain(signalChain.back());}
+}
+//==========================================================================================
+int getChainIndex(EffectType effect)
+{
+    auto index = std::find(signalChain.begin(), signalChain.end(), effect);
+    auto it = std::find(signalChain.begin(), signalChain.end(), effect);
+    if (it != signalChain.end())
+    {
+        return std::distance(signalChain.begin(), it);
+    }
+    return -1; // Effect not found in signal chain
+}
+void stringToOled(char* charPointer, int x, int y)
+{
+    display.WriteString(charPointer,Font_7x10, true);
+    display.SetCursor(x, y);
+}
+//==========================================================================================
+void handleEncoder()
+{
+    if (Encoder.RisingEdge())
+    {
+        inSubmenu = true;
+        currentEffectIndex = 0;
+    }
+    if (Encoder.TimeHeldMs() > 2000)
+    {
+        inSubmenu = false;
+        currentEffectIndex = 0;
+    }
+    currentEffectIndex += Encoder.Increment();
+    if (!inSubmenu)
+    {
+        currentEffectIndex = currentEffectIndex < 0 ? 0 : currentEffectIndex;
+        currentEffectIndex = currentEffectIndex > 14 ? 14 : currentEffectIndex;
+        if (currentEffectIndex < signalChain.size())
+            {paramMode = menuItemVector[currentEffectIndex];}
+        else
+            {paramMode = menuItems::SignalChain;}
+        }
+}
+void mainMenu(char* charPointer)
+{
+    if (!inSubmenu)
+    {   
+        // Page 1
+        if (currentEffectIndex < 4)
+        {
+            displayString = "Signal Chain";
+            stringToOled(charPointer,0,1);
+            displayString = "Looper";
+            stringToOled(charPointer,0,12);
+            displayString = "Delay";
+            stringToOled(charPointer,0,24);
+            displayString = "Phaser";
+            stringToOled(charPointer,0,36);
+            //displayString = "Chorus";
+            //stringToOled(charPointer,0,48);
+            display.Update();
+        }
+        // Page 2
+        else if (currentEffectIndex < 9 && currentEffectIndex > 4)
+        {
+            displayString = "Flanger";
+            stringToOled(charPointer,0,1);
+            displayString = "Tremolo";
+            stringToOled(charPointer,0,12);
+            displayString = "Overdrive";
+            stringToOled(charPointer,0,24);
+            displayString = "Compressor";
+            stringToOled(charPointer,0,36);
+            displayString = "Bitcrusher";
+            stringToOled(charPointer,0,48);
+            display.Update();
+        }
+        // Page 3
+        else 
+        {
+            displayString = "Wavefolder";
+            stringToOled(charPointer,0,1);
+            displayString = "Reverb";
+            stringToOled(charPointer,0,12);
+            displayString = "Resonator";
+            stringToOled(charPointer,0,24);
+            displayString = "Wah";
+            stringToOled(charPointer,0,36);
+            display.Update();
+        }
+
+    }
+}
+int submenuEncoderLogic(bool isActive, EffectType effect)
+{
+    int currentChainLocation = getChainIndex(effect);
+    if (isActive)
+    {
+        currentChainLocation += Encoder.Increment();
+    }
+    else
+        {placeEffectInSignalChain(effect,currentChainLocation);}
+        return currentChainLocation;
+}
+//==========================================================================================
+void displayMenu()
+{   
     daisy::System::Delay(2);
     char* strptr = &displayString[0];
-    //displayString += std::to_string(static_cast<uint32_t>(100*LinearizeLogarithmicValue(Knobs[knob_6].Process()))) + "%";
-    display.WriteString(strptr,Font_7x10, true);
-    display.SetCursor(0, 0);
+    mainMenu(strptr);
+    int chainLocation;
+    if (inSubmenu)
+    {
+        if (Encoder.RisingEdge())
+        {editLocationAvailable = !editLocationAvailable;}
+        switch (paramMode)
+            {
+                case menuItems::Delay:
+                    chainLocation = submenuEncoderLogic(editLocationAvailable,EffectType::Delay);
+                    displayString = "Time(ms):" + std::to_string(static_cast<int>(delTime));
+                    stringToOled(strptr,0,0);
+                    displayString = std::to_string(static_cast<int32_t>(chainLocation));
+                    stringToOled(strptr,100,0);
+                    break;
+                case menuItems::Phaser:  
+                    displayString = "Phaser";  
+                    stringToOled(strptr,0,0);           
+                    break;
+                case menuItems::Chorus:
+
+                    displayString = "Chorus";
+                    stringToOled(strptr,0,0);
+                    break;
+                case menuItems::Flanger:
+
+                    displayString = "Flanger";
+                    stringToOled(strptr,0,0);
+                    break;
+                case menuItems::Tremolo:
+
+                    displayString = "Tremolo";
+                    stringToOled(strptr,0,0);
+                    break;
+                case menuItems::Overdrive:
+
+                    displayString = "Overdrive";
+                    stringToOled(strptr,0,0);
+                    break;
+                case menuItems::Bitcrusher:
+
+                    displayString = "Bitcrusher";
+                    stringToOled(strptr,0,0);
+                    break;
+                case menuItems::Wavefolder:
+
+                    displayString = "Wavefolder";
+                    stringToOled(strptr,0,0);
+                    break;
+                case menuItems::Reverb:
+
+                    displayString = "Reverb";
+                    stringToOled(strptr,0,0);
+                    break;
+                case menuItems::Compressor:
+
+                    displayString = "Compressor";
+                    stringToOled(strptr,0,0);
+                    break;
+                case menuItems::Resonator:
+
+                    displayString = "Resonator";
+                    stringToOled(strptr,0,0);
+                    break;
+                case menuItems::Wah:
+                    displayString = "Wah";
+                    stringToOled(strptr,0,0);
+                    break;
+                case menuItems::Looper:
+
+                    displayString = "Looper";
+                    stringToOled(strptr,0,0);
+                    break;
+                case menuItems::SignalChain:
+                    displayString = "SignalChain";
+                    stringToOled(strptr,0,0);
+                    break;
+            }
+    }
     display.Update();
 }
 void initOLED()
@@ -107,9 +307,7 @@ void initOLED()
     display.Init(disp_cfg);
     
 }
-
 //==========================================================================================
-
 void processAnalogControls()
 {
     
@@ -119,7 +317,6 @@ void processAnalogControls()
     }
 }
 //==========================================================================================
-
 void setEffectValues()
 {
     flanger.SetLfoDepth(flangerDepth);
@@ -269,7 +466,6 @@ void knobsToValues()
 
     setEffectValues(); 
 }
-
 //==========================================================================================
 void processEffects(float input, float& output)
 {
@@ -357,51 +553,16 @@ void processEffects(float input, float& output)
             float effectedSig = output*loopInLevel;
             output = effectedSig + looper.Process(effectedSig)*loopLevel;
         }
+        else if (stopLoopPlayback && !signalChain.empty())
+        {
+            output = output;
+        }
         else 
             {output = input;}
         
         
-}
-//=======================================================================================================//
-
-size_t currentEffectIndex = 0;                                                                          //
-                                                                                                       //
-// Function to update the paramMode variable based on the current index
-void updateParamMode()
-{
-    if (currentEffectIndex < signalChain.size())
-    {
-        paramMode = menuItemVector[currentEffectIndex];
-    }
-    else
-    {
-        // If the index is out of range, set paramMode to a default value
-        paramMode = menuItems::Delay; // Or any other default value
-    }
-}
-
-void menuLogic ()
-{
-    Encoder.Debounce();
-    bool buttonPressed = Encoder.RisingEdge();
-    //int encValue = Encoder.Increment();
-       // if (buttonPressed) {encValue = 0;};
-    if (buttonPressed)
-    {
-        // Increment the currentEffectIndex and handle wrapping around if it goes beyond the vector size
-        currentEffectIndex = (currentEffectIndex + 1) % menuItemVector.size();
-    }      
-    else if (Encoder.TimeHeldMs()>2000)
-    {
-        currentEffectIndex = 0;
-    }   
-    // Update the paramMode variable based on the new index
-    updateParamMode();                                                                                                //
-                                                                                                              //
-}          
-                                                                                                           //
-//=============================================================================================================
-
+}        
+//==========================================================================================
 void looperLogic()
 {
     Switches[FS_1].Debounce();
@@ -416,7 +577,6 @@ void looperLogic()
         {looper.Clear();}
 
 }
-
 //==========================================================================================
 void initEffects()
 {
@@ -438,29 +598,6 @@ void initEffects()
     setEffectValues();
 }
 //==========================================================================================
-void removeEffectFromSignalChain(EffectType effect)
-{
-    auto removed = std::find(signalChain.begin(), signalChain.end(), effect);
-    if (removed != signalChain.end())
-    {
-        signalChain.erase(removed);
-    }
-}
-//==========================================================================================
-void placeEffectInSignalChain(EffectType effect, int newPosition)
-{
-    auto it = std::find(signalChain.begin(), signalChain.end(), effect);
-    if (it != signalChain.end())
-    {
-        signalChain.erase(it);
-        signalChain.insert(signalChain.begin() + newPosition, effect);
-    }
-    else
-    {signalChain.insert(signalChain.begin() + newPosition, effect);}
-    if (signalChain.size() > 8)
-        {removeEffectFromSignalChain(signalChain.back());}
-}
-//==========================================================================================
 void AudioCallback(daisy::AudioHandle::InputBuffer  in,
                    daisy::AudioHandle::OutputBuffer out,
                    size_t                    size)
@@ -468,7 +605,6 @@ void AudioCallback(daisy::AudioHandle::InputBuffer  in,
         processAnalogControls();
         knobsToValues();
         looperLogic();
-        menuLogic();
         for (size_t i=0; i < size; i++)
         {
             processEffects(in[0][i], out[0][i]);   
@@ -492,6 +628,7 @@ int main ()
     
 	while(1) 
     {
-		paint();
+        handleEncoder();
+		displayMenu();
     }
 }
