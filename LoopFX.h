@@ -58,9 +58,9 @@ enum menuItems
 // VARIABLES AND OBJECTS ==========================================================
 
 static daisy::Encoder Encoder;
-std::vector<menuItems> menuItemVector = {menuItems::Delay,menuItems::Phaser,menuItems::Chorus,menuItems::Flanger,
+std::vector<menuItems> menuItemVector = {menuItems::SignalChain,menuItems::Looper,menuItems::Delay,menuItems::Phaser,menuItems::Chorus,menuItems::Flanger,
                                          menuItems::Tremolo,menuItems::Overdrive,menuItems::Compressor,menuItems::Bitcrusher,
-                                         menuItems::Wavefolder,menuItems::Reverb,menuItems::Resonator, menuItems::Wah,menuItems::Looper,menuItems::SignalChain,};
+                                         menuItems::Wavefolder,menuItems::Reverb,menuItems::Resonator, menuItems::Wah};
 
 static daisysp::Phaser phaser; //2
 static daisysp::Chorus chorus; //3
@@ -98,7 +98,7 @@ float loopInLevel=1.f, loopLevel=1.f; bool stopLoopPlayback=false;
 bool led_state = true;
 std::string displayString = "";
 bool inSubmenu = false;
-int cursorIndex = 0;
+size_t cursorIndex = 0;
 int currentEffectIndex = 0;      
 bool editLocationAvailable = false;
 

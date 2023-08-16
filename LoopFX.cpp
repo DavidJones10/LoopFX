@@ -59,7 +59,7 @@ void conditionalParameter(float &oldValue, float newValue, float &param, float m
 // Initializes encoder and footswitches
 void InitOtherControls()
 {
-    Encoder.Init(PIN_ENC_INC, PIN_ENC_DEC, PIN_ENC_BUTTON);
+    Encoder.Init(PIN_ENC_INC, PIN_ENC_DEC, PIN_ENC_BUTTON, hw.AudioCallbackRate());
 
     constexpr daisy::Pin pin_numbers[SWITCH_LAST] = {PIN_FS1, PIN_FS2};
     for(size_t i = 0; i < SWITCH_LAST; i++)
@@ -127,16 +127,11 @@ int getChainIndex(EffectType effect)
     return -1; // Effect not found in signal chain
 }
 //==========================================================================================
-// Writes string at specific coordinates
-void stringToOled(char* charPointer, int x, int y)
-{
-    display.WriteString(charPointer,Font_7x10, true);
-    display.SetCursor(x, y);
-}
 //==========================================================================================
 // Uses encoder to control main menu
 void mainMenuEncoderLogic()
 { 
+    Encoder.Debounce();
     currentEffectIndex += Encoder.Increment();
     currentEffectIndex = currentEffectIndex % menuItemVector.size();
     if (!inSubmenu)
@@ -161,60 +156,83 @@ int submenuEncoderLogic(bool isActive, EffectType effect)
     }
     int currentChainLocation = getChainIndex(effect);
     if (isActive)
-    {
-        currentChainLocation += Encoder.Increment();
-    }
+        {currentChainLocation += Encoder.Increment();}
     else
         {placeEffectInSignalChain(effect,currentChainLocation);}
-        return currentChainLocation;
+    return currentChainLocation;
 }
 //==========================================================================================
 // Makes strings and writes to OLED for main menu
 void mainMenu(char* charPointer)
-{
+{   
+    int_fast8_t x = 100;
+    int_fast8_t y = currentEffectIndex * 12 % 48;
     if (!inSubmenu)
     {   
         // Page 1
+        //TODO: add setcursur before display Strings
+        
         if (currentEffectIndex < 4)
         {
-            displayString = "Signal Chain";
-            stringToOled(charPointer,0,1);
-            displayString = "Looper";
-            stringToOled(charPointer,0,12);
-            displayString = "Delay";
-            stringToOled(charPointer,0,24);
-            displayString = "Phaser";
-            stringToOled(charPointer,0,36);
-            //displayString = "Chorus";
-            //stringToOled(charPointer,0,48);
+            display.SetCursor(0, 0);
+            displayString = "Signal Chain   ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.SetCursor(0,12);
+            displayString = "Looper         ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.SetCursor(0, 24);
+            displayString = "Delay          ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.SetCursor(0, 36);
+            displayString = "Phaser         ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.SetCursor(0, 48);
+            displayString = "Chorus         ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.DrawCircle(x,y,3,true);
             display.Update();
         }
         // Page 2
         else if (currentEffectIndex < 9 && currentEffectIndex > 4)
         {
-            displayString = "Flanger";
-            stringToOled(charPointer,0,1);
-            displayString = "Tremolo";
-            stringToOled(charPointer,0,12);
-            displayString = "Overdrive";
-            stringToOled(charPointer,0,24);
-            displayString = "Compressor";
-            stringToOled(charPointer,0,36);
-            displayString = "Bitcrusher";
-            stringToOled(charPointer,0,48);
+            display.SetCursor(0, 0);
+            displayString = "Flanger        ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.SetCursor(0,12);
+            displayString = "Tremolo        ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.SetCursor(0, 24);
+            displayString = "Overdrive      ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.SetCursor(0, 36);
+            displayString = "Compressor     ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.SetCursor(0, 48);
+            displayString = "Bitcrusher     ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.DrawCircle(x,y,3,true);
             display.Update();
         }
         // Page 3
         else 
         {
-            displayString = "Wavefolder";
-            stringToOled(charPointer,0,1);
-            displayString = "Reverb";
-            stringToOled(charPointer,0,12);
-            displayString = "Resonator";
-            stringToOled(charPointer,0,24);
-            displayString = "Wah";
-            stringToOled(charPointer,0,36);
+            display.DrawCircle(x,y-12,3,false);
+            display.SetCursor(0, 0);
+            displayString = "Wavefolder     ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.SetCursor(0,12);
+            displayString = "Reverb         ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.SetCursor(0, 24);
+            displayString = "Resonator      ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.SetCursor(0, 36);
+            displayString = "Wah            ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.SetCursor(0, 48);
+            displayString = "               ";
+            display.WriteString(charPointer,Font_7x10, true);
+            display.DrawCircle(x,y,3,true);
             display.Update();
         }
 
@@ -224,9 +242,9 @@ void mainMenu(char* charPointer)
 // Runs all display function and is called in Main
 void displayMenu()
 {   
-    daisy::System::Delay(2);
+    daisy::System::Delay(200);
+    
     char* strptr = &displayString[0];
-    mainMenuEncoderLogic();
     mainMenu(strptr);
     int chainLocation;
     if (inSubmenu)
@@ -237,72 +255,46 @@ void displayMenu()
             {
                 case menuItems::Delay:
                     chainLocation = submenuEncoderLogic(editLocationAvailable,EffectType::Delay);
-                    displayString = "Time(ms):" + std::to_string(static_cast<int>(delTime));
-                    stringToOled(strptr,0,0);
+                    displayString = "Time(ms):" + std::to_string(static_cast<int32_t>(delTime));
+                    display.SetCursor(0,0);
+                    display.WriteString(strptr,Font_7x10, true);
                     displayString = std::to_string(static_cast<int32_t>(chainLocation));
-                    stringToOled(strptr,100,0);
+                    display.SetCursor(100,0);
+                    display.WriteString(strptr,Font_7x10, true);
                     break;
                 case menuItems::Phaser:  
-                    displayString = "Phaser";  
-                    stringToOled(strptr,0,0);           
                     break;
                 case menuItems::Chorus:
-
-                    displayString = "Chorus";
-                    stringToOled(strptr,0,0);
                     break;
                 case menuItems::Flanger:
-
-                    displayString = "Flanger";
-                    stringToOled(strptr,0,0);
                     break;
                 case menuItems::Tremolo:
 
-                    displayString = "Tremolo";
-                    stringToOled(strptr,0,0);
                     break;
                 case menuItems::Overdrive:
 
-                    displayString = "Overdrive";
-                    stringToOled(strptr,0,0);
                     break;
                 case menuItems::Bitcrusher:
 
-                    displayString = "Bitcrusher";
-                    stringToOled(strptr,0,0);
                     break;
                 case menuItems::Wavefolder:
 
-                    displayString = "Wavefolder";
-                    stringToOled(strptr,0,0);
                     break;
                 case menuItems::Reverb:
 
-                    displayString = "Reverb";
-                    stringToOled(strptr,0,0);
                     break;
                 case menuItems::Compressor:
 
-                    displayString = "Compressor";
-                    stringToOled(strptr,0,0);
                     break;
                 case menuItems::Resonator:
 
-                    displayString = "Resonator";
-                    stringToOled(strptr,0,0);
                     break;
                 case menuItems::Wah:
-                    displayString = "Wah";
-                    stringToOled(strptr,0,0);
                     break;
                 case menuItems::Looper:
 
-                    displayString = "Looper";
-                    stringToOled(strptr,0,0);
                     break;
                 case menuItems::SignalChain:
-                    displayString = "SignalChain";
-                    stringToOled(strptr,0,0);
                     break;
             }
     }
@@ -631,11 +623,11 @@ int main ()
     InitOtherControls();
     InitAnalogControls();
 
-    hw.SetAudioBlockSize(48);
+    hw.SetAudioBlockSize(4);
     hw.StartAudio(AudioCallback);
     
 	while(1) 
     {
-	    displayMenu();
+        displayMenu();
     }
 }
