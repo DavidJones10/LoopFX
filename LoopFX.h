@@ -23,7 +23,6 @@ enum Knobs
 };
 enum class EffectType
 {
-    Looper,
     Delay,
     Phaser,
     Chorus,
@@ -75,9 +74,12 @@ static daisysp::Resonator resonator;
 static daisysp::Autowah wah;
 
 std::vector<EffectType> signalChain;
+std::vector<std::string> parameterNames;
+std::vector<float> parameterValues;
 menuItems paramMode;
 daisy::AnalogControl Knobs[KNOB_LAST];
 daisy::Switch Switches[SWITCH_LAST];
+
 using MyOledDisplay = daisy::OledDisplay<daisy::SSD130xI2c128x64Driver>;
 MyOledDisplay display;
 
@@ -94,17 +96,21 @@ float revFeedback=.6f, revCutoff=10000;
 float compWet=.5f, compRatio=20.f, compAttack=5.f, compThresh=-40.f, compMakeup=40.f, compRelease=5.f;
 float resWet=.3f, resFreq=200, resBright=.5f, resDamping=.4f, resStructure=.2f;
 float wahWet=80, wahLevel=.7f, wahAmount=.7f;
-float loopInLevel=1.f, loopLevel=1.f; bool stopLoopPlayback=false;
+float loopInLevel=1.f, loopLevel=1.f, looperMode=0; bool stopLoopPlayback=false;
 bool led_state = true;
 std::string displayString = "";
+std::string looperString = "";
 bool inSubmenu = false;
-size_t cursorIndex = 0;
-int currentEffectIndex = 0;      
+int16_t cursorIndex = 0;
+int16_t currentEffectIndex = 0;      
 bool editLocationAvailable = false;
+EffectType menuToEffect;
+int16_t visibleChainIndex;
+int16_t chainEncValue;
 
 
 // knob variables to be stored
-float k1 = .5;
+float k1 = 0;
 float k2 = 0;
 float k3 = 0; 
 float k4 = 0;
