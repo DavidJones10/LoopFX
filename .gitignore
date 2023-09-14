@@ -1,0 +1,10 @@
+Makefile
+*.json
+*.svd
+*.bin
+*.d
+*.elf
+*.hex
+*.lst
+*.map
+*.o
