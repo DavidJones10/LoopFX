@@ -11,4 +11,4 @@
 ####     A looper and multi-effects pedal with a variable signal chain built on the daisy seed platform.
 
 #### Image of device in prototyping stage:
-[!plot](./Assets/LoopFx_Prototype.png)
+![plot](./Assets/LoopFx_Prototype.png)
