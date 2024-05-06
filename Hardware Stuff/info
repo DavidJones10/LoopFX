@@ -1,0 +1,294 @@
+{
+  "uuid": "416f46845f32aa5d62f21f18e1d8a134",
+  "path": "Offline/EZ_Looper",
+  "name": "EZ_Looper",
+  "content": "Looper pedal with built in effects and modular signal chain built with the daisy seed platform.",
+  "created_at": "2023-07-27 20:42:06",
+  "updated_at": "2024-03-31 02:51:01",
+  "stick": "",
+  "documents": [
+    {
+      "uuid": "0e795ee61cf66bb2082dbf106537d641",
+      "title": "Sheet_1",
+      "description": "",
+      "docType": "1",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "29b86dd421794b8b84dd8b62ded9170d": 1,
+        "eea74e3a16f548f383486f844f2fd995": 1,
+        "4e86284cb7ce4aa2968dd1dfb1124929": 1,
+        "ad9022d23d681319c5038773af262b7d": 1,
+        "d8562ac5eb28bbdae16eb84b1498f058": 1,
+        "ea7a29ca4b82486e98321dd6ea1fb247": 1,
+        "92086306d3b54684b3e4524aed9d8185": 1,
+        "b3b6948778ee460bb5121959bd674aea": 6,
+        "b0248eb51e084227889f2cb84eab79c4": 7,
+        "a7a0e276dadd4f8097422d2afc2e1b9c": 1,
+        "271ff60b370d4adfb65e5e089e0875e7": 3,
+        "bd7fe9567fcc480091406b17d44c7544": 1,
+        "9aaf486c3aae4952a09158b3554ba2ae": 4,
+        "b45d8e36fbe44c46bf079a78e5790b35": 1,
+        "096a8e183e51416d8fb39880bc1d2d73": 1
+      },
+      "BOM": [
+        [
+          "Value",
+          "Quantity",
+          "Package",
+          "Components",
+          "CustomPara"
+        ],
+        [
+          "100uF",
+          1,
+          "CAP-4*5",
+          "C1",
+          {
+            "BOM_Supplier Part": "",
+            "BOM_Supplier": "",
+            "BOM_Manufacturer Part": "",
+            "puuid": "20aaac69b9bb4a7389f60f6573f09661",
+            "uuid": "a7a0e276dadd4f8097422d2afc2e1b9c"
+          }
+        ],
+        [
+          "1nF",
+          1,
+          "CAP-TH_L7.5-W4.0-P5.00-D0.6-1",
+          "C2",
+          {
+            "BOM_Manufacturer Part": "",
+            "puuid": "46ddf21b2a744b63917d8cb1c0f0e6a6",
+            "uuid": "b45d8e36fbe44c46bf079a78e5790b35"
+          }
+        ],
+        [
+          "1uF",
+          3,
+          "CAP-TH_L6.0-W5.0-P5.00-D1.0",
+          "C7,C9,C10",
+          {
+            "BOM_Manufacturer Part": "",
+            "puuid": "1e2a380c593048368a710fe901df8cb8",
+            "uuid": "271ff60b370d4adfb65e5e089e0875e7"
+          }
+        ],
+        [
+          "100nF",
+          4,
+          "CAP-TH_L12.0-W5.5-P10.00-D1.0",
+          "C8,C12,C13,C17",
+          {
+            "BOM_Manufacturer Part": "",
+            "puuid": "d80b7ac451384e03be2332dfccc2f463",
+            "uuid": "9aaf486c3aae4952a09158b3554ba2ae"
+          }
+        ],
+        [
+          "100pF",
+          1,
+          "CAP-TH_L4.8-W3.2-P5.08-D0.5",
+          "C11",
+          {
+            "BOM_Manufacturer Part": "",
+            "puuid": "788e7d1cb33f48a3935dbe0ea05ce338",
+            "uuid": "bd7fe9567fcc480091406b17d44c7544"
+          }
+        ],
+        [
+          "1N5817RLG",
+          1,
+          "DO-15_BD3.1-L6.7-P10.70-D0.9-RD",
+          "D1",
+          {
+            "BOM_Manufacturer Part": "",
+            "puuid": "a0fc0068fb5047059de95c698675eae7",
+            "uuid": "ea7a29ca4b82486e98321dd6ea1fb247"
+          }
+        ],
+        [
+          "0.96OLED_4P",
+          1,
+          "0.96OLED_4P",
+          "OLED1",
+          {
+            "BOM_Supplier Part": "",
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "",
+            "BOM_Manufacturer Part": "",
+            "puuid": "88b7b62f56d14ce0a65d98c420c09d52",
+            "uuid": "eea74e3a16f548f383486f844f2fd995"
+          }
+        ],
+        [
+          "Fs_1",
+          1,
+          "3MMHOLE_PTH",
+          "P1",
+          {
+            "BOM_Manufacturer Part": "",
+            "puuid": "254dacea44314aeaae2c72ca86f68b10",
+            "uuid": "096a8e183e51416d8fb39880bc1d2d73"
+          }
+        ],
+        [
+          "Potentiometer",
+          6,
+          "POTENTIOMETER",
+          "R1,R2,R3,R4,R5,R6",
+          {
+            "BOM_Manufacturer": "",
+            "BOM_Manufacturer Part": "",
+            "BOM_Supplier Part": "",
+            "BOM_Supplier": "",
+            "puuid": "307cf6ede8134974a093a06eaf9e9650",
+            "uuid": "b3b6948778ee460bb5121959bd674aea"
+          }
+        ],
+        [
+          "1M",
+          4,
+          "RC20",
+          "R7,R8,R14,R15",
+          {
+            "BOM_Supplier Part": "",
+            "BOM_Supplier": "",
+            "BOM_Manufacturer Part": "",
+            "puuid": "08ae1d0075d941d58dd6c05dbde844d5",
+            "uuid": "b0248eb51e084227889f2cb84eab79c4"
+          }
+        ],
+        [
+          "100R",
+          1,
+          "RC20",
+          "R9",
+          {
+            "BOM_Supplier Part": "",
+            "BOM_Supplier": "",
+            "BOM_Manufacturer Part": "",
+            "puuid": "08ae1d0075d941d58dd6c05dbde844d5",
+            "uuid": "b0248eb51e084227889f2cb84eab79c4"
+          }
+        ],
+        [
+          "100k",
+          1,
+          "RC20",
+          "R10",
+          {
+            "BOM_Supplier Part": "",
+            "BOM_Supplier": "",
+            "BOM_Manufacturer Part": "",
+            "puuid": "08ae1d0075d941d58dd6c05dbde844d5",
+            "uuid": "b0248eb51e084227889f2cb84eab79c4"
+          }
+        ],
+        [
+          "1k",
+          1,
+          "RC20",
+          "R12",
+          {
+            "BOM_Supplier Part": "",
+            "BOM_Supplier": "",
+            "BOM_Manufacturer Part": "",
+            "puuid": "08ae1d0075d941d58dd6c05dbde844d5",
+            "uuid": "b0248eb51e084227889f2cb84eab79c4"
+          }
+        ],
+        [
+          "7805(SOT-89)",
+          1,
+          "SOT-89-3_L4.5-W2.5-P1.50-LS4.2-BR",
+          "U1",
+          {
+            "BOM_Supplier": "LCSC",
+            "BOM_Manufacturer": "CJ",
+            "BOM_Manufacturer Part": "CJ78L05",
+            "BOM_Supplier Part": "C2079",
+            "BOM_Paste Type": "expand",
+            "puuid": "89243c15a2974ba08305eced8ca2c9d4",
+            "uuid": "29b86dd421794b8b84dd8b62ded9170d"
+          }
+        ],
+        [
+          "ES_DAISY_SEED",
+          1,
+          "ES_DAISY_SEED",
+          "U2",
+          {
+            "BOM_Manufacturer Part": "",
+            "puuid": "a6379454187540a0b9a1eaa5c599f9a2",
+            "uuid": "4e86284cb7ce4aa2968dd1dfb1124929"
+          }
+        ],
+        [
+          "KY-040 CYLEWET ROTARY ENCODER",
+          1,
+          "KY-040 CYLEWET ROTARY ENCODER",
+          "U4",
+          {
+            "BOM_Manufacturer Part": "KY-040",
+            "puuid": "01ad30f3c0d247b199b41f34610e7e0e",
+            "uuid": "92086306d3b54684b3e4524aed9d8185"
+          }
+        ],
+        [
+          "TL072CP",
+          1,
+          "DIP-8_L9.6-W6.4-P2.54-LS7.6-BL-1",
+          "U3",
+          {
+            "BOM_Manufacturer Part": "",
+            "puuid": "e0c08598662c4de4af4df4ac354c8345",
+            "uuid": "ad9022d23d681319c5038773af262b7d"
+          }
+        ]
+      ],
+      "updateTime": 1711867385,
+      "createTime": 1690508527,
+      "histories": [],
+      "created_at": "2023-07-27 20:42:07",
+      "updated_at": "2024-03-31 02:43:05"
+    },
+    {
+      "uuid": "62cf5f460cc824bfa47e4d2328bf5f33",
+      "puuid": "416f46845f32aa5d62f21f18e1d8a134",
+      "title": "PCB_EZ_Looper",
+      "filename": "PCB_EZ_Looper.json",
+      "description": "",
+      "docType": "3",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "a0fc0068fb5047059de95c698675eae7": 1,
+        "88b7b62f56d14ce0a65d98c420c09d52": 1,
+        "307cf6ede8134974a093a06eaf9e9650": 6,
+        "89243c15a2974ba08305eced8ca2c9d4": 1,
+        "a6379454187540a0b9a1eaa5c599f9a2": 1,
+        "01ad30f3c0d247b199b41f34610e7e0e": 1,
+        "e0c08598662c4de4af4df4ac354c8345": 1,
+        "46ddf21b2a744b63917d8cb1c0f0e6a6": 1,
+        "1e2a380c593048368a710fe901df8cb8": 3,
+        "d80b7ac451384e03be2332dfccc2f463": 4,
+        "788e7d1cb33f48a3935dbe0ea05ce338": 1,
+        "20aaac69b9bb4a7389f60f6573f09661": 1,
+        "08ae1d0075d941d58dd6c05dbde844d5": 7,
+        "254dacea44314aeaae2c72ca86f68b10": 1
+      },
+      "BOM": [],
+      "updateTime": 1711867861,
+      "createTime": 1691379968,
+      "histories": [],
+      "created_at": "2023-08-06 23:46:08",
+      "updated_at": "2024-03-31 02:51:01"
+    }
+  ],
+  "sort": [],
+  "title": "EZ_Looper",
+  "foldername": "EZ_Looper",
+  "schfilename": "EZ_Looper.json",
+  "schfilemtime": 1711867385731
+}
