@@ -178,7 +178,7 @@ void effectFromMenu()
 //==========================================================================================
 // Uses encoder to control main menu
 void menuEncoderLogic()
-{ 
+{
     Encoder.Debounce();
     if (!inSubmenu)
     {   
